@@ -13,6 +13,7 @@ export const typeDefs = `#graphql
     date:String
     new_source_id:String
     user_id:String
+    src:String
     category_id:String
   }
   type Categorias {

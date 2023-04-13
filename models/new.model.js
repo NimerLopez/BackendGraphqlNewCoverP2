@@ -6,6 +6,7 @@ export const newSchema = new Schema({
   short_description: { type: String },
   permalink: { type: String },
   date: { type: String },
+  src:{ type: String },
   new_source_id: { type: String },
   user_id: { type: String, required: true },
   category_id: { type: String, required: true },
