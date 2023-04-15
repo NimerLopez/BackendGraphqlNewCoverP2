@@ -27,3 +27,23 @@ export const getNew = async function(id){//get all new by user id
         return null;
       }
     }
+    export const getMyNewSearch= async function(valor,user_id){
+      console.log(valor);
+        try {
+          const news = await newModel.find({  
+            user_id: user_id, 
+            $or: [
+              { title: { $regex: valor, $options: "i" } },
+              { short_description: { $regex: valor, $options: "i" } },
+            ],
+          
+          });
+          if (news) {
+            return news;
+          } else {
+            return null;
+          }
+        } catch (error) {
+          return null;
+        }
+      }

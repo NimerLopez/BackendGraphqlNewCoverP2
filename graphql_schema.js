@@ -16,6 +16,13 @@ export const typeDefs = `#graphql
     src:String
     category_id:String
   }
+  type newsources {
+    _id: String
+    url: String
+    name: String
+    category_id: String
+    user_id:String
+  }
   type Categorias {
     _id: String
     name:String
@@ -28,6 +35,9 @@ export const typeDefs = `#graphql
   type Query {
     dataNewByUserID(id:String):[New]
     MyNewsByFilCate(id_Categoria:String,user_id:String):[New]
+    MyNewsSearch(valor:String,user_id:String):[New]
+    MyNewsSource(id:String):[newsources]
+
     Categorias:[Categorias]
     version: String
   }
