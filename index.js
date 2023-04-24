@@ -6,6 +6,7 @@ import { getNew,getMyNewByCategory,getMyNewSearch } from './controllers/new.cont
 import { getCategories } from './controllers/categories.controller.js';
 import { getNewSoruce } from './controllers/newsources.controller.js';
 
+import jwt from 'jsonwebtoken';
 
 const db = mongoose.connect("mongodb://127.0.0.1:27017/ProyectoISW711", { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log('Conected to mongodb')).catch((error) => console.error(error));
 
@@ -38,6 +39,15 @@ const resolvers = {
   },
 };
 
+function verifyToken(token) {
+  try {
+    const decoded = jwt.verify(token, 'nimer1');
+    console.log(decoded);
+    return decoded;
+  } catch (err) {
+    throw new Error('Error token');
+  }
+}
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
 const server = new ApolloServer({
@@ -45,11 +55,37 @@ const server = new ApolloServer({
   resolvers,
 });
 
+const { url } = await startStandaloneServer(server, {
+  context: async ({ req }) => {
+    // get the user token from the headers
+    const token = req.headers.authorization || '';
+    console.log(token);
+    verifyToken(token)
+    // try to retrieve a user with the token
+    // optionally block the user
+    // we could also check user roles/permissions here
+    if (!token)
+      // throwing a `GraphQLError` here allows us to specify an HTTP status code,
+      // standard `Error`s will have a 500 status code by default
+      throw new GraphQLError('User is not authenticated', {
+        extensions: {
+          code: 'UNAUTHENTICATED',
+          http: { status: 401 },
+        },
+      });
+
+    // add the user to the context
+    return { token };
+  },
+});
+
+// Middleware para validar Token JWT
+
 // Passing an ApolloServer instance to the `startStandaloneServer` function:
 //  1. creates an Express app
 //  2. installs your ApolloServer instance as middleware
 //  3. prepares your app to handle incoming requests
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4001 },
-});
+// const { url } = await startStandaloneServer(server, {
+//   listen: { port: 4001 },
+// });
 console.log(`🚀  Server ready at: ${url}`);
